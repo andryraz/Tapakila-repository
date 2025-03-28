@@ -1,0 +1,94 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+enum Role {
+  USER
+  ORGANISATEUR
+  ADMIN
+}
+
+enum StatutEvenement {
+  BROUILLON
+  PUBLIE
+  ANNULE
+}
+
+enum TypeBillet {
+  VIP
+  STANDARD
+  EARLY_BIRD
+}
+
+model Utilisateur {
+  id           Int    @id @default(autoincrement())
+  nom          String
+  email        String @unique
+  motDePasse   String
+  role         Role   @default(USER)
+  dateCreation DateTime @default(now())
+
+  reservations Reservation[]
+  evenements   Evenement[] @relation("OrganisateurEvenement")
+}
+
+model Evenement {
+  id          Int       @id @default(autoincrement())
+  titre       String
+  description String
+  categorie   String
+  image       String
+  dateHeure   DateTime
+  lieu        String
+  statut      StatutEvenement @default(BROUILLON)
+
+  organisateur   Utilisateur @relation("OrganisateurEvenement", fields: [organisateurId], references: [id])
+  organisateurId Int
+
+  billets       Billet[]
+  reservations  Reservation[]
+}
+
+model Billet {
+  id            Int        @id @default(autoincrement())
+  type          TypeBillet
+  prix          Float
+  disponibilite Int
+  limiteAchat   Int
+  venteActive   Boolean @default(true)
+  
+  evenement     Evenement @relation(fields: [evenementId], references: [id])
+  evenementId   Int
+
+  billetsReserves BilletReserve[]
+}
+
+model Reservation {
+  id             Int        @id @default(autoincrement())
+  utilisateur    Utilisateur @relation(fields: [utilisateurId], references: [id])
+  utilisateurId  Int
+  evenement      Evenement @relation(fields: [evenementId], references: [id])
+  evenementId    Int
+  dateReservation DateTime @default(now())
+
+  billetsReserves BilletReserve[]
+}
+
+model BilletReserve {
+  id             Int        @id @default(autoincrement())
+  reservation    Reservation @relation(fields: [reservationId], references: [id])
+  reservationId  Int
+  billet         Billet @relation(fields: [billetId], references: [id])
+  billetId       Int
+  quantite       Int
+}
