@@ -81,10 +81,13 @@ export async function getEventById(eventId: number) {
   return prisma.evenement.findUnique({
     where: { id: eventId },
     select: {
+      id: true,
       titre: true,
       description: true,
       dateHeure: true,
       lieu: true,
+      statut: true,
+      image: true,
       organisateur: {
         select: {
           nom: true,

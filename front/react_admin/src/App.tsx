@@ -19,12 +19,33 @@ import
   SimpleShowLayout,
   TextField,
   TextInput,
-  ReferenceField
+  useRecordContext,
+  ReferenceField,
+  ImageField
 } from 'react-admin';
 import { dataProvider } from './data-provider';
-
 import authProvider from './authProvider';
+import { Dashboard } from './Dashboard';
+import { createTheme } from '@mui/material';
+import { defaultTheme } from 'react-admin';
 //import MyLoginPage from './components/LoginPage/LoginPage';
+
+//theme
+const myTheme = createTheme({
+  ...defaultTheme,
+  palette: {
+    primary: {
+      main: '#1976d2', // Bleu personnalisé
+    },
+    secondary: {
+      main: '#3f4245', // Rose
+    },
+    background: {
+      default: '#f4f6f8', // Fond gris clair
+      paper: '#ffffff', // Fond des cartes et menus
+    },
+  },
+});
 
 //event
 export const EventList = () => (
@@ -39,16 +60,35 @@ export const EventList = () => (
   </List>
 );
 
+const OrganisateurField = () => {
+  const record = useRecordContext();
+  if (!record || !record.organisateur) return null;
+  
+  return <span>{record.organisateur.nom} ({record.organisateur.email})</span>;
+};
+
+
 export const EventShow = () => (
   <Show>
     <SimpleShowLayout>
+    
+        <ImageField source="image" title="titre" label="Image de l'événement" 
+        sx={{
+          width: "400px", // Agrandir l'image
+          height: "auto", // Garde le ratio
+          position: "absolute",
+          top: 140, // Descendre l'image
+          right: 20, // Garder l'image à droite
+          overflow: "hidden", // Évite que l'image dépasse
+        }}
+        />
     <TextField source='id' />
       <TextField source='titre' />
       <DateField label="Date de l'evenement" source="dateHeure" />
-      <TextField source='lieu' />
-      <TextField source='statut' />
+      <TextField source='lieu' />    
       <TextField source="statut" label="Statut de l'événement" />
-      <ReferenceField source="organisateurId" reference="Utilisateur" label="Organisateur" />
+      <OrganisateurField label="Organisateur" />
+     
     </SimpleShowLayout>
   </Show>
 );
@@ -161,7 +201,9 @@ export const UserEdit = () => (
 const App = () => {
   return (
     <Admin  dataProvider={dataProvider}
+      theme={myTheme}
         authProvider={authProvider}
+        dashboard={Dashboard}
     >
       <Resource name='evenements' list={EventList} show={EventShow} create={EventCreate} edit={EventEdit}/>
       <Resource name='billets' list={TicketList} show={TicketShow} create={TicketCreate} edit={TicketEdit} />

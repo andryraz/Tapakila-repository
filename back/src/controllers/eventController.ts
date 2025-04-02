@@ -48,6 +48,7 @@ export async function getEvent(req: Request, res: Response): Promise<void>  {
         const eventId = parseInt(req.params.id);
         if (isNaN(eventId)) {
             res.status(400).json({ error: "ID d'événement invalide" });
+            return;
         }
         const event = await getEventById(eventId);
         if (!event) {
