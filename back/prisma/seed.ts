@@ -22,7 +22,7 @@ async function main() {
       dateHeure: new Date("2025-10-24T20:00:00Z"),
       lieu: "ZENITH TOULOUSE METROPOLE",
       statut: StatutEvenement.PUBLIE,
-      organisateurId: 11, 
+      organisateurId: 1, 
     },
   });
 
@@ -35,7 +35,7 @@ async function main() {
       dateHeure: new Date("2025-06-12T10:00:00Z"),
       lieu: "CIRCUIT DU MANS - PLACE LUIGI CHINETTI",
       statut: StatutEvenement.PUBLIE,
-      organisateurId: organisateur.id, 
+      organisateurId: 1, 
     },
   });
 
