@@ -23,6 +23,8 @@ import
 } from 'react-admin';
 import { dataProvider } from './data-provider';
 
+import authProvider from './authProvider';
+//import MyLoginPage from './components/LoginPage/LoginPage';
 
 //event
 export const EventList = () => (
@@ -64,10 +66,10 @@ export const EventCreate = () => (
 
 export const EventEdit = () => (
   <Edit>
-      <SimpleForm>
-          <TextInput source="title" validate={required()} />
-          <TextInput multiline source="body" validate={required()} label='Short body'/>
-      </SimpleForm>
+    <SimpleForm>
+      <TextInput source="title" validate={required()} />
+      <TextInput multiline source="body" validate={required()} label='Short body' />
+    </SimpleForm>
   </Edit>
 );
 
@@ -96,19 +98,19 @@ export const TicketShow = () => (
 
 export const TicketCreate = () => (
   <Create>
-      <SimpleForm>
-          <TextInput source='title' validate={required()} />
-         
-      </SimpleForm>
+    <SimpleForm>
+      <TextInput source='title' validate={required()} />
+
+    </SimpleForm>
   </Create>
 );
 
 export const TicketEdit = () => (
   <Edit>
-      <SimpleForm>
-          <TextInput source='title' validate={required()} />
-          
-      </SimpleForm>
+    <SimpleForm>
+      <TextInput source='title' validate={required()} />
+
+    </SimpleForm>
   </Edit>
 );
 
@@ -158,7 +160,9 @@ export const UserEdit = () => (
 
 const App = () => {
   return (
-    <Admin  dataProvider={dataProvider}>
+    <Admin  dataProvider={dataProvider}
+        authProvider={authProvider}
+    >
       <Resource name='evenements' list={EventList} show={EventShow} create={EventCreate} edit={EventEdit}/>
       <Resource name='billets' list={TicketList} show={TicketShow} create={TicketCreate} edit={TicketEdit} />
       <Resource name='utilisateurs' list={UserList} show={UserShow} create={UserCreate} edit={UserEdit}/>

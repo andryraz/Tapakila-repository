@@ -1,31 +1,58 @@
-import { AuthProvider } from "react-admin";
+// src/authProvider.ts
+import { AuthProvider } from 'react-admin';
 
-const authProvider = {
-    async login({ username, password }) {
-        if (username !== 'john' || password !== '123') {
-            throw new Error('Login failed');
+interface User {
+    username: string;
+    password: string;
+    role: string;
+}
+
+const users: User[] = [
+    { username: "admin1", password: "password123", role: "admin" },
+    { username: "admin2", password: "password123", role: "admin" }
+];
+
+const authProvider: AuthProvider = {
+    login: async ({ username, password }: { username: string; password: string }) => {
+        const user = users.find(u => u.username === username && u.password === password);
+
+        if (!user) {
+            return Promise.reject(new Error("Invalid credentials"));
         }
-        localStorage.setItem('username', username);
+
+        localStorage.setItem("auth", JSON.stringify(user));
+        return Promise.resolve();
     },
-    async checkError(error) {
-        const status = error.status;
-        if (status === 401 || status === 403) {
-            localStorage.removeItem('username');
-            throw new Error('Session expired');
+
+    logout: () => {
+        localStorage.removeItem("auth");
+        return Promise.resolve();
+    },
+
+    checkAuth: () => {
+        return localStorage.getItem("auth") ? Promise.resolve() : Promise.reject();
+    },
+
+    checkError: (error) => {
+        if (error.status === 401 || error.status === 403) {
+            localStorage.removeItem("auth");
+            return Promise.reject();
         }
-        // other error codes (404, 500, etc): no need to log out
+        return Promise.resolve();
     },
-    async checkAuth() {
-        if (!localStorage.getItem('username')) {
-            throw new Error('Not authenticated');
-        }
+
+    getIdentity: async () => {
+        const auth = localStorage.getItem("auth");
+        if (!auth) return Promise.reject();
+
+        const { username, role } = JSON.parse(auth);
+        return Promise.resolve({ id: username, fullName: username, role });
     },
-    async logout() {
-        localStorage.removeItem('username');
-    },
-    async getIdentity() {
-        const username = localStorage.getItem('username');
-        return { id: username, fullName: username };
-    },
+
+    getPermissions: async () => {
+        const auth = localStorage.getItem("auth");
+        return auth ? Promise.resolve(JSON.parse(auth).role) : Promise.reject();
+    }
 };
+
 export default authProvider;
