@@ -21,14 +21,14 @@ export const dataProvider: DataProvider = {
       let apiUrl;
 
       switch (resource) {
-          case 'posts':
-              apiUrl = 'http://localhost:5000/evenements';
+          case 'evenements':
+              apiUrl = 'http://localhost:5000/evenements/admin';
               break;
-          case 'todos':
-              apiUrl = 'https://jsonplaceholder.typicode.com/todos';
+          case 'billets':
+              apiUrl = 'http://localhost:5000/billets/1';
               break;
-          case 'users':
-              apiUrl = 'https://jsonplaceholder.typicode.com/users';
+          case 'utilisateurs':
+              apiUrl = 'http://localhost:5000/utilisateurs';
               break;
           default:
               throw new Error(`Resource ${resource} is not supported`);
@@ -61,14 +61,14 @@ export const dataProvider: DataProvider = {
       let apiUrl;
 
       switch (resource) {
-          case 'posts':
-              apiUrl = `https://jsonplaceholder.typicode.com/posts/${params.id}`;
+          case 'evenements':
+              apiUrl = `http://localhost:5000/evenements/${params.id}`;
               break;
-          case 'todos':
-              apiUrl = `https://jsonplaceholder.typicode.com/todos/${params.id}`;
+          case 'billets':
+              apiUrl = `http://localhost:5000/billets/${params.id}`;
               break;
-          case 'users':
-              apiUrl = `https://jsonplaceholder.typicode.com/users/${params.id}`;
+          case 'utilisateurs':
+              apiUrl = `http://localhost:5000/utilisateurs/${params.id}`;
               break;
           default:
               throw new Error(`Resource ${resource} is not supported`);
@@ -91,18 +91,18 @@ export const dataProvider: DataProvider = {
       let apiUrl;
 
       switch (resource) {
-          case 'posts':
-              apiUrl = 'https://jsonplaceholder.typicode.com/posts';
-              break;
-          case 'todos':
-              apiUrl = 'https://jsonplaceholder.typicode.com/todos';
-              break;
-          case 'users':
-              apiUrl = 'https://jsonplaceholder.typicode.com/users';
-              break;
-          default:
-              throw new Error(`Resource ${resource} is not supported`);
-      }
+        case 'evenements':
+            apiUrl = `http://localhost:5000/evenements`;
+            break;
+        case 'billets':
+            apiUrl = `http://localhost:5000/billets`;
+            break;
+        case 'utilisateurs':
+            apiUrl = `http://localhost:5000/utilisateurs`;
+            break;
+        default:
+            throw new Error(`Resource ${resource} is not supported`);
+    }
       const { data } = params;
       const createdItem = await fetch(apiUrl, { method: 'POST', body: JSON.stringify(data) });
 
@@ -122,18 +122,18 @@ export const dataProvider: DataProvider = {
       let apiUrl;
 
       switch (resource) {
-          case 'posts':
-              apiUrl = `https://jsonplaceholder.typicode.com/posts/${params.id}`;
-              break;
-          case 'todos':
-              apiUrl = `https://jsonplaceholder.typicode.com/todos/${params.id}`;
-              break;
-          case 'users':
-              apiUrl = `https://jsonplaceholder.typicode.com/users${params.id}`;
-              break;
-          default:
-              throw new Error(`Resource ${resource} is not supported`);
-      }
+        case 'evenements':
+            apiUrl = `http://localhost:5000/evenements/${params.id}`;
+            break;
+        case 'billets':
+            apiUrl = `http://localhost:5000/billets/${params.id}`;
+            break;
+        case 'utilisateurs':
+            apiUrl = `http://localhost:5000/utilisateurs/${params.id}`;
+            break;
+        default:
+            throw new Error(`Resource ${resource} is not supported`);
+    }
       const response = await fetch(apiUrl, {
           method: 'DELETE',
       });
@@ -153,91 +153,91 @@ export const dataProvider: DataProvider = {
 
 
 
-  deleteMany: async function <RecordType extends RaRecord = any>(
-      resource: string,
-      params: DeleteManyParams
-  ): Promise<DeleteManyResult<RecordType>> {
-      let apiUrlBase;
+//   deleteMany: async function <RecordType extends RaRecord = any>(
+//       resource: string,
+//       params: DeleteManyParams
+//   ): Promise<DeleteManyResult<RecordType>> {
+//       let apiUrlBase;
 
-      switch (resource) {
-          case 'posts':
-              apiUrlBase = 'https://jsonplaceholder.typicode.com/posts';
-              break;
-          case 'todos':
-              apiUrlBase = 'https://jsonplaceholder.typicode.com/todos';
-              break;
-          case 'albums':
-              apiUrlBase = 'https://jsonplaceholder.typicode.com/albums';
-              break;
-          default:
-              throw new Error(`Resource ${resource} is not supported`);
-      }
-      const { ids } = params;
+//       switch (resource) {
+//           case 'posts':
+//               apiUrlBase = 'https://jsonplaceholder.typicode.com/posts';
+//               break;
+//           case 'todos':
+//               apiUrlBase = 'https://jsonplaceholder.typicode.com/todos';
+//               break;
+//           case 'albums':
+//               apiUrlBase = 'https://jsonplaceholder.typicode.com/albums';
+//               break;
+//           default:
+//               throw new Error(`Resource ${resource} is not supported`);
+//       }
+//       const { ids } = params;
 
-      try {
-          const promises = ids.map(id =>
-              fetch(`${apiUrlBase}/${id}`, { method: 'DELETE' })
-          );
+//       try {
+//           const promises = ids.map(id =>
+//               fetch(`${apiUrlBase}/${id}`, { method: 'DELETE' })
+//           );
 
-          const responses = await Promise.all(promises);
-          const allOk = responses.every(response => response.ok);
+//           const responses = await Promise.all(promises);
+//           const allOk = responses.every(response => response.ok);
 
-          if (!allOk) {
-              throw new Error("Erreur lors de la suppression de plusieurs éléments.");
-          }
+//           if (!allOk) {
+//               throw new Error("Erreur lors de la suppression de plusieurs éléments.");
+//           }
 
-          const result: DeleteManyResult<RecordType> = {
-              data: ids as unknown as RecordType[],
-          };
+//           const result: DeleteManyResult<RecordType> = {
+//               data: ids as unknown as RecordType[],
+//           };
 
-          return result;
-      } catch (error) {
-          console.error("Erreur lors de la suppression de plusieurs éléments :", error);
-          throw error;
-      }
-  },
+//           return result;
+//       } catch (error) {
+//           console.error("Erreur lors de la suppression de plusieurs éléments :", error);
+//           throw error;
+//       }
+//   },
 
-  update: async function <RecordType extends RaRecord = any>(
-      resource: string,
-      params: UpdateParams
-  ): Promise<UpdateResult<RecordType>> {
-      let apiUrl;
+//   update: async function <RecordType extends RaRecord = any>(
+//       resource: string,
+//       params: UpdateParams
+//   ): Promise<UpdateResult<RecordType>> {
+//       let apiUrl;
 
-      switch (resource) {
-          case 'posts':
-              apiUrl = `https://jsonplaceholder.typicode.com/posts/${params.id}`;
-              break;
-          case 'todos':
-              apiUrl = `https://jsonplaceholder.typicode.com/todos/${params.id}`;
-              break;
-          case 'albums':
-              apiUrl = `https://jsonplaceholder.typicode.com/albums/${params.id}`;
-              break;
-          default:
-              throw new Error(`Resource ${resource} is not supported`);
-      }
-      const { id, data } = params;
-      const response = await fetch(apiUrl, {
-          method: 'PUT',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
-      });
+//       switch (resource) {
+//           case 'posts':
+//               apiUrl = `https://jsonplaceholder.typicode.com/posts/${params.id}`;
+//               break;
+//           case 'todos':
+//               apiUrl = `https://jsonplaceholder.typicode.com/todos/${params.id}`;
+//               break;
+//           case 'albums':
+//               apiUrl = `https://jsonplaceholder.typicode.com/albums/${params.id}`;
+//               break;
+//           default:
+//               throw new Error(`Resource ${resource} is not supported`);
+//       }
+//       const { id, data } = params;
+//       const response = await fetch(apiUrl, {
+//           method: 'PUT',
+//           headers: {
+//               'Content-Type': 'application/json',
+//           },
+//           body: JSON.stringify(data),
+//       });
 
-      if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || `Erreur lors de la mise à jour de l'élément ${id}`);
-      }
+//       if (!response.ok) {
+//           const errorData = await response.json();
+//           throw new Error(errorData.message || `Erreur lors de la mise à jour de l'élément ${id}`);
+//       }
 
-      const updatedRecord = await response.json();
+//       const updatedRecord = await response.json();
 
-      const result: UpdateResult<RecordType> = {
-          data: updatedRecord as RecordType,
-      };
+//       const result: UpdateResult<RecordType> = {
+//           data: updatedRecord as RecordType,
+//       };
 
-      return result;
-  },
+//       return result;
+//   },
 };
 
 

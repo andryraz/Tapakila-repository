@@ -25,6 +25,7 @@ export async function login(req: Request, res: Response): Promise<void> {
     const result = await loginUser(email, motDePasse);
     res.json(result);
   } catch (error) {
+    console.error("Erreur dans /login:", error); 
     res.status(401).json({ error: "Email ou mot de passe incorrect" });
   }
 }

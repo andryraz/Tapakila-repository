@@ -59,6 +59,23 @@ export async function getSearchEvents(titre?: string) {
   });
 }
 
+//ADMIN
+export async function getAllEventAdmin() {
+  return prisma.evenement.findMany({
+    select: {
+      id: true,
+      titre: true,
+      dateHeure: true,
+      description: true,
+      categorie: true,
+      lieu: true,
+      image: true,
+      statut: true,
+      organisateurId: true
+    },
+  });
+}
+
 
 export async function getEventById(eventId: number) {
   return prisma.evenement.findUnique({
@@ -87,7 +104,7 @@ export async function getEventById(eventId: number) {
 }
 
 
-// ✅ Créer un événement
+
 export async function createEvent(
   organisateurId: number,
   titre: string,
@@ -106,12 +123,12 @@ export async function createEvent(
       image,
       dateHeure,
       lieu,
-      statut: "BROUILLON", // Par défaut
+      statut: "BROUILLON",
     },
   });
 }
 
-// ✅ Modifier un événement (seulement l'organisateur ou un admin)
+
 export async function updateEvent(
   evenementId: number,
   userId: number,
@@ -138,7 +155,7 @@ export async function updateEvent(
   });
 }
 
-// ✅ Supprimer un événement (seulement l'organisateur ou un admin)
+
 export async function deleteEvent(evenementId: number, userId: number, userRole: string) {
   // Vérifier si l'événement existe
   const evenement = await prisma.evenement.findUnique({

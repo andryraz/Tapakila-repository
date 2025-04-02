@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createEvent, deleteEvent, getAllEvents, getEventById, getSearchEvents, updateEvent } from "../services/eventService";
+import { createEvent, deleteEvent, getAllEventAdmin, getAllEvents, getEventById, getSearchEvents, updateEvent } from "../services/eventService";
 import { AuthRequest } from "../middlewares/authMiddleware";
 
 // export async function getEvents(req: Request, res: Response) {
@@ -31,6 +31,17 @@ export async function getFilteredEvents(req: Request, res: Response) {
     }
   }
   
+//ADMIN
+export async function getEventsAdmin(req: Request, res: Response) {
+  try {
+    const events = await getAllEventAdmin();
+    res.json(events);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+}
+
 
 export async function getEvent(req: Request, res: Response): Promise<void>  {
     try { 

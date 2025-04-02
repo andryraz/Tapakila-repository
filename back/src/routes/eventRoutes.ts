@@ -1,13 +1,13 @@
 import express from "express";
-import { getEvents, getEvent, getFilteredEvents, createEvenementController, updateEvenementController, deleteEvenementController } from "../controllers/eventController";
+import { getEvents, getEvent, getFilteredEvents, createEvenementController, updateEvenementController, deleteEvenementController, getEventsAdmin } from "../controllers/eventController";
 import { authenticateToken, authorizeRoles } from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
 router.get("/", getEvents);
+router.get("/admin", getEventsAdmin);
 router.get("/categorie/:categorie", getFilteredEvents);
 router.get("/lieu/:lieu", getFilteredEvents);
-
 router.post("/", authenticateToken, authorizeRoles("ADMIN", "ORGANISATEUR"), createEvenementController);
 router.put("/:evenementId", authenticateToken, updateEvenementController);
 router.delete("/:evenementId", authenticateToken, deleteEvenementController);

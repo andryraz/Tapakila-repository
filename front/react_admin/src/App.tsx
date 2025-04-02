@@ -19,31 +19,39 @@ import
   SimpleShowLayout,
   TextField,
   TextInput,
+  ReferenceField
 } from 'react-admin';
 import { dataProvider } from './data-provider';
 
 
-//POSTS
-export const PostList = () => (
+//event
+export const EventList = () => (
   <List>
     <Datagrid>
       <TextField source='id' />
       <TextField source='titre' />
+      <DateField label="Date de l'evenement" source="dateHeure" />
+      <TextField source='lieu' />
+      <TextField source='statut' />
     </Datagrid>
   </List>
 );
 
-export const PostShow = () => (
+export const EventShow = () => (
   <Show>
     <SimpleShowLayout>
-      <TextField source='id' />
-      <TextField source='title' />
-      <RichTextField source='body' />
+    <TextField source='id' />
+      <TextField source='titre' />
+      <DateField label="Date de l'evenement" source="dateHeure" />
+      <TextField source='lieu' />
+      <TextField source='statut' />
+      <TextField source="statut" label="Statut de l'événement" />
+      <ReferenceField source="organisateurId" reference="Utilisateur" label="Organisateur" />
     </SimpleShowLayout>
   </Show>
 );
 
-export const PostCreate = () => (
+export const EventCreate = () => (
   <Create>
     <SimpleForm>
       <TextInput source='title' />
@@ -54,7 +62,7 @@ export const PostCreate = () => (
   </Create>
 );
 
-export const PostEdit = () => (
+export const EventEdit = () => (
   <Edit>
       <SimpleForm>
           <TextInput source="title" validate={required()} />
@@ -64,28 +72,29 @@ export const PostEdit = () => (
 );
 
 
-//TODOS
-export const TodoList = () => (
+//billets
+export const TicketList = () => (
   <List>
       <Datagrid>
           <TextField source='id' />
-          <TextField source='title' />
-         
+          <TextField source='prix' />
+          <TextField source='type' />
+          <TextField source='evenementId' />
       </Datagrid>
   </List>
 );
 
-export const TodoShow = () => (
+export const TicketShow = () => (
   <Show>
       <SimpleShowLayout>
           <TextField source='id' />
-          <TextField source='title' />
-         
+          <TextField source='type' />
+          <TextField source='disponibilite' />
       </SimpleShowLayout>
   </Show>
 );
 
-export const TodoCreate = () => (
+export const TicketCreate = () => (
   <Create>
       <SimpleForm>
           <TextInput source='title' validate={required()} />
@@ -94,7 +103,7 @@ export const TodoCreate = () => (
   </Create>
 );
 
-export const TodoEdit = () => (
+export const TicketEdit = () => (
   <Edit>
       <SimpleForm>
           <TextInput source='title' validate={required()} />
@@ -103,14 +112,13 @@ export const TodoEdit = () => (
   </Edit>
 );
 
-
 //USERS
 export const UserList = () => (
   <List>
       <Datagrid>
           <TextField source='id' />
-          <TextField source='name' />
-          <TextField source='username' />
+          <TextField source='nom' />
+          <TextField source='role' />
       </Datagrid>
   </List>
 );
@@ -119,11 +127,10 @@ export const UserShow = () => (
   <Show>
     <SimpleShowLayout>
       <TextField source='id' />
-      <TextField source='name' />
-      <TextField source='username' />
-      <TextField source='phone' />
-      <TextField source='address.street' label="Street" />
-      <TextField source='company.name' label="Company" />
+      <TextField source='nom' />
+      <TextField source='email' />
+      <TextField source='role' />
+      <DateField label="Date de creation" source="dateCreation" />
     </SimpleShowLayout>
   </Show>
 );
@@ -131,11 +138,9 @@ export const UserShow = () => (
 export const UserCreate = () => (
   <Create>
       <SimpleForm>
-          <TextInput source='name' validate={required()} />
-          <TextInput source='username' validate={required()} />
-          <TextInput source='phone' validate={required()} />
-          <TextInput source='address.street' validate={required()} />
-          <TextInput source='company.name' validate={required()} />
+          <TextInput source='nom' validate={required()} />
+          <TextInput source='email' validate={required()} />
+          <TextInput source='role' validate={required()} />
       </SimpleForm>
   </Create>
 );
@@ -143,39 +148,20 @@ export const UserCreate = () => (
 export const UserEdit = () => (
   <Edit>
       <SimpleForm>
-          <TextInput source='name' validate={required()} />
-          <TextInput source='username' validate={required()} />
-          <TextInput source='phone' validate={required()} />
-          <TextInput source='address.street' validate={required()} />
-          <TextInput source='company.name' validate={required()} />
+          <TextInput source='nom' validate={required()} />
+          <TextInput source='email' validate={required()} />
+          <TextInput source='role' validate={required()} />
       </SimpleForm>
   </Edit>
 );
 
 
-// export const authProvider: AuthProvider = {
-//   // send username and password to the auth server and get back credentials
-//   //async login(params) {/** ... **/},
-//   // when the dataProvider returns an error, check if this is an authentication error
-//   //async checkError(error) {/** ... **/},
-//   // when the user navigates, make sure that their credentials are still valid
-//  login: async function (params: any): Promise{},
-//  const access token 
-//   // remove local credentials and notify the auth server that the user logged out
-//   //async logout() {/** ... **/},
-//   // get the user's profile
-//   //async getIdentity() {/** ... **/},
-//   // check whether users have the right to perform an action on a resource (optional)
-//   //async canAccess() {/** ... **/},
-// };
-
-
 const App = () => {
   return (
     <Admin  dataProvider={dataProvider}>
-      <Resource name='posts' list={PostList} show={PostShow} create={PostCreate} edit={PostEdit}/>
-      <Resource name='todos' list={TodoList} show={TodoShow} create={TodoCreate} edit={TodoEdit} />
-      <Resource name='users' list={UserList} show={UserShow} create={UserCreate} edit={UserEdit}/>
+      <Resource name='evenements' list={EventList} show={EventShow} create={EventCreate} edit={EventEdit}/>
+      <Resource name='billets' list={TicketList} show={TicketShow} create={TicketCreate} edit={TicketEdit} />
+      <Resource name='utilisateurs' list={UserList} show={UserShow} create={UserCreate} edit={UserEdit}/>
      
     </Admin>
   );
