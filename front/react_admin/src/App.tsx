@@ -28,6 +28,7 @@ import authProvider from './authProvider';
 import { Dashboard } from './Dashboard';
 import { createTheme } from '@mui/material';
 import { defaultTheme } from 'react-admin';
+import LoginPage from './components/LoginPage/LoginPage';
 //import MyLoginPage from './components/LoginPage/LoginPage';
 
 //theme
@@ -117,22 +118,22 @@ export const EventEdit = () => (
 //billets
 export const TicketList = () => (
   <List>
-      <Datagrid>
-          <TextField source='id' />
-          <TextField source='prix' />
-          <TextField source='type' />
-          <TextField source='evenementId' />
-      </Datagrid>
+    <Datagrid>
+      <TextField source='id' />
+      <TextField source='prix' />
+      <TextField source='type' />
+      <TextField source='evenementId' />
+    </Datagrid>
   </List>
 );
 
 export const TicketShow = () => (
   <Show>
-      <SimpleShowLayout>
-          <TextField source='id' />
-          <TextField source='type' />
-          <TextField source='disponibilite' />
-      </SimpleShowLayout>
+    <SimpleShowLayout>
+      <TextField source='id' />
+      <TextField source='type' />
+      <TextField source='disponibilite' />
+    </SimpleShowLayout>
   </Show>
 );
 
@@ -157,11 +158,11 @@ export const TicketEdit = () => (
 //USERS
 export const UserList = () => (
   <List>
-      <Datagrid>
-          <TextField source='id' />
-          <TextField source='nom' />
-          <TextField source='role' />
-      </Datagrid>
+    <Datagrid>
+      <TextField source='id' />
+      <TextField source='nom' />
+      <TextField source='role' />
+    </Datagrid>
   </List>
 );
 
@@ -179,21 +180,21 @@ export const UserShow = () => (
 
 export const UserCreate = () => (
   <Create>
-      <SimpleForm>
-          <TextInput source='nom' validate={required()} />
-          <TextInput source='email' validate={required()} />
-          <TextInput source='role' validate={required()} />
-      </SimpleForm>
+    <SimpleForm>
+      <TextInput source='nom' validate={required()} />
+      <TextInput source='email' validate={required()} />
+      <TextInput source='role' validate={required()} />
+    </SimpleForm>
   </Create>
 );
 
 export const UserEdit = () => (
   <Edit>
-      <SimpleForm>
-          <TextInput source='nom' validate={required()} />
-          <TextInput source='email' validate={required()} />
-          <TextInput source='role' validate={required()} />
-      </SimpleForm>
+    <SimpleForm>
+      <TextInput source='nom' validate={required()} />
+      <TextInput source='email' validate={required()} />
+      <TextInput source='role' validate={required()} />
+    </SimpleForm>
   </Edit>
 );
 
@@ -204,11 +205,12 @@ const App = () => {
       theme={myTheme}
         authProvider={authProvider}
         dashboard={Dashboard}
+        loginPage={LoginPage}
     >
-      <Resource name='evenements' list={EventList} show={EventShow} create={EventCreate} edit={EventEdit}/>
+      <Resource name='evenements' list={EventList} show={EventShow} create={EventCreate} edit={EventEdit} />
       <Resource name='billets' list={TicketList} show={TicketShow} create={TicketCreate} edit={TicketEdit} />
-      <Resource name='utilisateurs' list={UserList} show={UserShow} create={UserCreate} edit={UserEdit}/>
-     
+      <Resource name='utilisateurs' list={UserList} show={UserShow} create={UserCreate} edit={UserEdit} />
+
     </Admin>
   );
 };

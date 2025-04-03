@@ -1,26 +1,22 @@
-// src/authProvider.ts
-import { AuthProvider } from 'react-admin';
+import { AuthProvider } from "react-admin";
 
-interface User {
-    username: string;
-    password: string;
-    role: string;
-}
-
-const users: User[] = [
-    { username: "admin1", password: "password123", role: "admin" },
-    { username: "admin2", password: "password123", role: "admin" }
-];
+const API_URL = "http://localhost:5000/auth";
 
 const authProvider: AuthProvider = {
-    login: async ({ username, password }: { username: string; password: string }) => {
-        const user = users.find(u => u.username === username && u.password === password);
+    login: async ({ username, password }) => {
+        const response = await fetch(`${API_URL}/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: username, motDePasse: password }),
+        });
 
-        if (!user) {
-            return Promise.reject(new Error("Invalid credentials"));
+        if (!response.ok) {
+            throw new Error("Email ou mot de passe incorrect");
         }
 
-        localStorage.setItem("auth", JSON.stringify(user));
+        const { token, user } = await response.json();
+
+        localStorage.setItem("auth", JSON.stringify({ token, ...user }));
         return Promise.resolve();
     },
 
@@ -41,18 +37,18 @@ const authProvider: AuthProvider = {
         return Promise.resolve();
     },
 
-    getIdentity: async () => {
+    getIdentity: () => {
         const auth = localStorage.getItem("auth");
         if (!auth) return Promise.reject();
 
-        const { username, role } = JSON.parse(auth);
-        return Promise.resolve({ id: username, fullName: username, role });
+        const { id, nom, email } = JSON.parse(auth);
+        return Promise.resolve({ id, fullName: nom || email });
     },
 
-    getPermissions: async () => {
+    getPermissions: () => {
         const auth = localStorage.getItem("auth");
         return auth ? Promise.resolve(JSON.parse(auth).role) : Promise.reject();
-    }
+    },
 };
 
 export default authProvider;
