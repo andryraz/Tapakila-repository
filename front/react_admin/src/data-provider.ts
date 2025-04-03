@@ -8,9 +8,10 @@ import {
   QueryFunctionContext,
   RaRecord,
   UpdateParams,
-  UpdateResult
+  UpdateResult,
+  fetchUtils, GetManyReferenceParams, GetManyReferenceResult, RaRecord
 } from 'react-admin';
-
+const apiUrl = 'http://localhost:5000';
 
 export const dataProvider: DataProvider = {
   getList: async function <RecordType extends RaRecord = any>(
@@ -52,6 +53,28 @@ export const dataProvider: DataProvider = {
       return result;
   },
 
+
+    // Autres méthodes (getList, getOne, create, delete, etc.)
+  
+    getManyReference: async function <RecordType extends RaRecord = any>(
+      resource: string,
+      params: GetManyReferenceParams
+    ): Promise<GetManyReferenceResult<RecordType>> {
+      // Construire l'URL pour récupérer les billets associés à l'ID de l'événement
+      const url = `${apiUrl}/billets/${params.id}`;
+  
+      // Effectuer la requête API
+      const response = await fetchUtils.fetchJson(url);
+  
+      // Récupérer les données de la réponse
+      const data = response.json;
+  
+      // Retourner la réponse dans le format attendu par React Admin
+      return {
+        data: data,  // Les billets associés à l'événement
+        total: data.length,  // Le nombre total de billets
+      };
+    },
 
   getOne: async function <RecordType extends RaRecord = any>(
       resource: string,
@@ -111,6 +134,47 @@ export const dataProvider: DataProvider = {
       return result;
   },
 
+  update: async function <RecordType extends RaRecord = any>(
+    resource: string,
+    params: UpdateParams
+): Promise<UpdateResult<RecordType>> {
+    let apiUrl;
+
+    switch (resource) {
+        case 'evenements':
+            apiUrl = `http://localhost:5000/evenements/${params.id}`;
+            break;
+        case 'billets':
+            apiUrl = `http://localhost:5000/billets/${params.id}`;
+            break;
+        case 'utilisateurs':
+            apiUrl = `http://localhost:5000/utilisateurs/${params.id}`;
+            break;
+        default:
+            throw new Error(`Resource ${resource} is not supported`);
+    }
+    const { id, data } = params;
+    const response = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Erreur lors de la mise à jour de l'élément ${id}`);
+    }
+
+    const updatedRecord = await response.json();
+
+    const result: UpdateResult<RecordType> = {
+        data: updatedRecord as RecordType,
+    };
+
+    return result;
+},
 
   delete: async function <RecordType extends RaRecord = any>(
       resource: string,
@@ -146,6 +210,9 @@ export const dataProvider: DataProvider = {
 
       return result;
   },
+
+};
+
 
 
 
@@ -193,54 +260,6 @@ export const dataProvider: DataProvider = {
 //           throw error;
 //       }
 //   },
-
-//   update: async function <RecordType extends RaRecord = any>(
-//       resource: string,
-//       params: UpdateParams
-//   ): Promise<UpdateResult<RecordType>> {
-//       let apiUrl;
-
-//       switch (resource) {
-//           case 'posts':
-//               apiUrl = `https://jsonplaceholder.typicode.com/posts/${params.id}`;
-//               break;
-//           case 'todos':
-//               apiUrl = `https://jsonplaceholder.typicode.com/todos/${params.id}`;
-//               break;
-//           case 'albums':
-//               apiUrl = `https://jsonplaceholder.typicode.com/albums/${params.id}`;
-//               break;
-//           default:
-//               throw new Error(`Resource ${resource} is not supported`);
-//       }
-//       const { id, data } = params;
-//       const response = await fetch(apiUrl, {
-//           method: 'PUT',
-//           headers: {
-//               'Content-Type': 'application/json',
-//           },
-//           body: JSON.stringify(data),
-//       });
-
-//       if (!response.ok) {
-//           const errorData = await response.json();
-//           throw new Error(errorData.message || `Erreur lors de la mise à jour de l'élément ${id}`);
-//       }
-
-//       const updatedRecord = await response.json();
-
-//       const result: UpdateResult<RecordType> = {
-//           data: updatedRecord as RecordType,
-//       };
-
-//       return result;
-//   },
-};
-
-
-
-
-
 
 
 

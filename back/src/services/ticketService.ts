@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+
 // 🔹 Fonction pour créer un billet et le lier à un événement
 export async function createTicket(
   evenementId: number,
