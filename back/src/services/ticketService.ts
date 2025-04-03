@@ -15,6 +15,7 @@ export async function createTicket(
     // Vérifier si l'événement existe
     const evenement = await prisma.evenement.findUnique({
       where: { id: evenementId },
+     
     });
 
     if (!evenement) {

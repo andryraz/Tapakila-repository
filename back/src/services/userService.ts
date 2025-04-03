@@ -5,9 +5,11 @@ export async function getUserById(userId: number) {
   return prisma.utilisateur.findUnique({
       where: { id: userId },
       select: {
+          id: true,
           nom: true,
           email: true,
           dateCreation: true,
+          role: true,
           reservations: {
               select: {  
                   dateReservation: true,
