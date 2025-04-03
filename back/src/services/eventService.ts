@@ -178,3 +178,33 @@ export async function deleteEvent(evenementId: number, userId: number, userRole:
     where: { id: evenementId },
   });
 }
+
+export async function deleteEventAdmin(evenementId: number) {
+  // Vérifier si l'événement existe
+  const evenement = await prisma.evenement.findUnique({
+    where: { id: evenementId },
+  });
+
+  return await prisma.evenement.delete({
+    where: { id: evenementId },
+  });
+}
+
+export async function updateEventAdmin(
+  evenementId: number,
+  updateData: Partial<{ titre: string; description: string; categorie: string; image: string; dateHeure: Date; lieu: string }>
+) {
+  // Vérifier si l'événement existe
+  const evenement = await prisma.evenement.findUnique({
+    where: { id: evenementId },
+  });
+
+  if (!evenement) {
+    throw new Error("Événement introuvable.");
+  }
+
+  return await prisma.evenement.update({
+    where: { id: evenementId },
+    data: updateData,
+  });
+}

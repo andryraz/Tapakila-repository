@@ -1,6 +1,7 @@
 import express from "express";
-import { getEvents, getEvent, getFilteredEvents, createEvenementController, updateEvenementController, deleteEvenementController, getEventsAdmin } from "../controllers/eventController";
+import { getEvents, getEvent, getFilteredEvents, createEvenementController, updateEvenementController, deleteEvenementController, getEventsAdmin, deleteEvenementAdmin, updateEvenementAdmin } from "../controllers/eventController";
 import { authenticateToken, authorizeRoles } from "../middlewares/authMiddleware";
+
 
 const router = express.Router();
 
@@ -11,8 +12,8 @@ router.get("/:id", getEvent);
 router.get("/categorie/:categorie", getFilteredEvents);
 router.get("/lieu/:lieu", getFilteredEvents);
 router.post("/", authenticateToken, authorizeRoles("ADMIN", "ORGANISATEUR"), createEvenementController);
-router.put("/:evenementId", updateEvenementController);
-router.delete("/:evenementId", authenticateToken, deleteEvenementController);
+router.put("/:evenementId", updateEvenementAdmin);
+router.delete("/:evenementId", deleteEvenementAdmin);
 // router.get("/:categorie/:lieu", getEvents);
 // http://localhost:3000/evenements/?titre=titre
 

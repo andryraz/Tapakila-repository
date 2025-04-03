@@ -43,37 +43,28 @@ async function main() {
 
   const event2 = await prisma.evenement.create({
     data: {
-      titre: "24H DU MANS 2024 - ENTREE ESSAIS JEUDI ",
-      description: "Grâce au billet Jeudi, vivez une journée d’Essais intense côté piste avec lutte pour l’Hyperpole.",
-      categorie: "SPORT - AUTOMOBILE",
-      image: "https://www.ticketmaster.fr/statics/vignettes/a_606175_p.webp",
-      dateHeure: new Date("2025-06-12T10:00:00Z"),
-      lieu: "CIRCUIT DU MANS - PLACE LUIGI CHINETTI",
+      titre: "Concert Rock ",
+      description: "Description du concert rock.",
+      categorie: "CONCERT - ROCK",
+      image: "https://www.example.com",
+      dateHeure: new Date("2025-12-12T10:00:00Z"),
+      lieu: "Stade Belgique",
       statut: StatutEvenement.PUBLIE,
-      organisateurId: 1, 
+      organisateurId: 2, 
     },
   });
 
   
-  const ticket1 = await prisma.billet.create({
-    data: {
-      type: TypeBillet.VIP,
-      prix: 100.0,
-      disponibilite: 50,
-      limiteAchat: 10,
-      evenementId: event1.id,
-    },
-  });
+  // const ticket1 = await prisma.billet.create({
+  //   data: {
+  //     type: TypeBillet.VIP,
+  //     prix: 100.0,
+  //     disponibilite: 50,
+  //     limiteAchat: 10,
+  //     evenementId: event1.id,
+  //   },
+  // });
 
-  const ticket2 = await prisma.billet.create({
-    data: {
-      type: TypeBillet.STANDARD,
-      prix: 50.0,
-      disponibilite: 200,
-      limiteAchat: 20,
-      evenementId: event2.id,
-    },
-  });
 
   
 

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createEvent, deleteEvent, getAllEventAdmin, getAllEvents, getEventById, getSearchEvents, updateEvent } from "../services/eventService";
+import { createEvent, deleteEvent, deleteEventAdmin, getAllEventAdmin, getAllEvents, getEventById, getSearchEvents, updateEvent, updateEventAdmin } from "../services/eventService";
 import { AuthRequest } from "../middlewares/authMiddleware";
 
 // export async function getEvents(req: Request, res: Response) {
@@ -107,6 +107,39 @@ export async function deleteEvenementController(req: AuthRequest, res: Response)
 
     await deleteEvent(Number(evenementId), req.user.userId, req.user.role);
     res.json({ message: "Événement supprimé avec succès." });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+export async function deleteEvenementAdmin(req: AuthRequest, res: Response): Promise<void> {
+  try {
+    const { evenementId } = req.params;
+
+    if (!evenementId) {
+      res.status(401).json({ error: "ID de l\'événement est requis." });
+      return;
+    }
+
+    await deleteEventAdmin(Number(evenementId));
+    res.json({ message: "Événement supprimé avec succès." });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+export async function updateEvenementAdmin(req: AuthRequest, res: Response): Promise<void> {
+  try {
+    const { evenementId } = req.params;
+    const updateData = req.body;
+
+    if (!evenementId) {
+      res.status(401).json({ error: "Utilisateur non authentifié." });
+      return;
+    }
+
+    const updatedEvenement = await updateEventAdmin(Number(evenementId), updateData);
+    res.json(updatedEvenement);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
