@@ -83,3 +83,21 @@ export async function updateBilletVenteStatus(billetId: number, venteActive: boo
     throw new Error("Impossible de modifier l'état de vente du billet.");
   }
 }
+
+export const getTotalBilletsDisponibles = async () => {
+  try {
+    const totalBilletsDisponibles = await prisma.billet.aggregate({
+      _sum: {
+        disponibilite: true,
+      },
+      where: {
+        venteActive: true,  // Seuls les billets actifs sont comptés
+      },
+    });
+
+    return totalBilletsDisponibles._sum.disponibilite;
+  } catch (error) {
+    throw new Error('Erreur lors de l\'agrégation des billets disponibles');
+  }
+};
+

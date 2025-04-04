@@ -50,6 +50,9 @@ export const dataProvider: DataProvider = {
             case 'utilisateurs':
                 apiUrl = 'http://localhost:5000/utilisateurs';
                 break;
+            case 'billets':
+                apiUrl = `http://localhost:5000/billets/totals/billets`;
+                break;
             default:
                 throw new Error(`Resource ${resource} is not supported`);
         }

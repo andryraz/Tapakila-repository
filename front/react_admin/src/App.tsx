@@ -147,6 +147,7 @@ export const EventShow = () => {
                 <TableCell><strong>Prix (€)</strong></TableCell>
                 <TableCell><strong>Disponibilité</strong></TableCell>
                 <TableCell><strong>Limite d'achat</strong></TableCell>
+                <TableCell><strong>Statut</strong></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -156,6 +157,7 @@ export const EventShow = () => {
                   <TableCell>{billet.prix}</TableCell>
                   <TableCell>{billet.disponibilite}</TableCell>
                   <TableCell>{billet.limiteAchat}</TableCell>
+                  <TableCell>{billet.venteActive ? "Actif" : "Inactif"}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

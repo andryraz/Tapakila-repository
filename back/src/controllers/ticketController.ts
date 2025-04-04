@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import {  createTicket, getTicketsByEvenement, updateBilletVenteStatus } from "../services/ticketService";
+import {  createTicket, getTicketsByEvenement, getTotalBilletsDisponibles, updateBilletVenteStatus } from "../services/ticketService";
 
 // 🔹 Contrôleur pour créer un billet
 export async function createTicketController(req: Request, res: Response): Promise<void> {
@@ -50,3 +50,13 @@ export async function updateBilletVenteController(req: Request, res: Response): 
      res.status(500).json({ error: "Erreur interne du serveur" });
   }
 }
+
+export async function getTotalTicket(req: Request, res: Response): Promise<void> {
+  try {
+    const totalBillets = await getTotalBilletsDisponibles();
+    res.json({ totalBilletsDisponibles: totalBillets });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Une erreur est survenue lors de la récupération des totaux.' });
+  }
+};

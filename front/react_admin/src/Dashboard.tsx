@@ -9,13 +9,32 @@ export const Dashboard = () => {
   const { data: utilisateurs = [], total: totalUtilisateurs, isLoading: loadingUtilisateurs } = useGetList("utilisateurs");
 
   const [loading, setLoading] = useState(true);
+  const [totalBilletsDisponibles, setTotalBilletsDisponibles] = useState<number | null>(null);
+  const [loadingTotalBillets, setLoadingTotalBillets] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 2000); 
+    const timer = setTimeout(() => setLoading(false), 1000); 
     return () => clearTimeout(timer);
   }, []);
 
-  if (loadingEvents || loadingBillets || loadingUtilisateurs || loading) {
+  // Récupérer le total des billets disponibles depuis l'API
+  useEffect(() => {
+    const fetchTotalBillets = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/billets/totals/billets");
+        const data = await response.json();
+        setTotalBilletsDisponibles(data.totalBilletsDisponibles);
+        setLoadingTotalBillets(false);
+      } catch (error) {
+        console.error("Erreur lors de la récupération du total des billets disponibles", error);
+        setLoadingTotalBillets(false);
+      }
+    };
+
+    fetchTotalBillets();
+  }, []);
+
+  if (loadingEvents || loadingBillets || loadingUtilisateurs || loading || loadingTotalBillets) {
     return (
       <Card sx={{ textAlign: "center", p: 5, display: "flex", flexDirection: "column", alignItems: "center" }}>
         <CircularProgress size={50} color="primary" />
@@ -57,9 +76,9 @@ export const Dashboard = () => {
         ) : (
           <>
             <StatCard title="Total Événements" value={totalEvents} />
-            <StatCard title="Total Billets" value={totalBillets} />
+            <StatCard title="Total Billets Disponibles" value={totalBilletsDisponibles || 0} />
             <StatCard title="Total Utilisateurs" value={totalUtilisateurs} />
-            <StatCard title="Total Réservations" value={21} />
+            <StatCard title="Total Réservations" value={21} />    
           </>
         )}
       </div>
@@ -71,21 +90,20 @@ export const Dashboard = () => {
             <Skeleton variant="rectangular" width={600} height={300} />
           ) : (
             <BarChart
-  dataset={[
-    { label: "Indochine", value: 10 },
-    { label: "Concert Rock", value: 7 },
-    { label: " Concert JAZZ", value: 6 },
-    { label: "Coldplay", value: 11 },
-    { label: " Tomorrowland 2025", value: 9 },
-    { label: " Jazz a Vienne", value: 10 },
-    { label: " Metallica - M72 World Tour", value: 4 },
-  ]}
-  xAxis={[{ scaleType: "band", dataKey: "label" }]}
-  series={[{ dataKey: "value", label: "Billets vendus" }]}
-  width={600}
-  height={300}
-/>
-
+              dataset={[
+                { label: "Indochine", value: 10 },
+                { label: "Concert Rock", value: 7 },
+                { label: "Concert Jazz", value: 6 },
+                { label: "Coldplay", value: 11 },
+                { label: "Tomorrowland 2025", value: 9 },
+                { label: "Jazz à Vienne", value: 10 },
+                { label: "Metallica - M72 World Tour", value: 4 },
+              ]}
+              xAxis={[{ scaleType: "band", dataKey: "label" }]}
+              series={[{ dataKey: "value", label: "Billets vendus" }]}
+              width={600}
+              height={300}
+            />
           )}
         </CardContent>
       </Card>
