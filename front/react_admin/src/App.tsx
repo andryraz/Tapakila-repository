@@ -1,344 +1,310 @@
-import
- { Admin,
-  AuthProvider,
-  BooleanInput,
+import {
+  Admin,
   Create,
-  Datagrid,
-  DateField,
-  DateInput,
-  Edit,
-  EditButton,
   List,
-  NumberInput,
-  ReferenceManyField,
-  required,
-  Resource,
-  RichTextField,
+  Edit,
   Show,
   SimpleForm,
   SimpleShowLayout,
-  TextField,
   TextInput,
-  useRecordContext,
-  ReferenceField,
-  ImageField,
-  useSidebarState,
-  Menu,
-  Layout,
-  NumberField,
-  SelectInput,
-  useGetList,
+  TextField,
+  DateInput,
+  DateField,
+  Datagrid,
+  required,
+  Resource,
   FileInput,
   FileField,
-  CustomRoutes
+  CustomRoutes,
+  useRecordContext,
+  useGetManyReference,
+  ImageField,
 } from 'react-admin';
 import { dataProvider } from './data-provider';
 import authProvider from './authProvider';
 import { Dashboard } from './Dashboard';
 import { createTheme } from '@mui/material';
-import { defaultTheme } from 'react-admin';
 import LoginPage from './components/LoginPage/LoginPage';
 import UserIcon from '@mui/icons-material/People';
-import EventIcon from "@mui/icons-material/Event";
-import ConfirmationNumberIcon from "@mui/icons-material/Label";
-import { useGetManyReference } from 'react-admin'; // Utilisation de la méthode getManyReference
-import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
-import ReservationEventSelector from './components/ReservationPage/ReservationEventSelector';
-import ReservationByEvent from './components/ReservationPage/ReservationByEvent';
+import EventIcon from '@mui/icons-material/Event';
+import TicketIcon from '@mui/icons-material/ConfirmationNumber';
 import { Route } from 'react-router-dom';
+import {
+  Box,
+  Typography,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Card,
+  Chip,
+} from '@mui/material';
+import ReservationByEvent from './components/ReservationPage/ReservationByEvent';
 import { ReservationListByEvenement } from './components/ReservationPage/ReservationListByEvenement';
-//import MyLoginPage from './components/LoginPage/LoginPage';
 
-//theme
-const myTheme = createTheme({
-  ...defaultTheme,
+// Thème minimaliste
+const theme = createTheme({
   palette: {
-    primary: {
-      main: '#1976d2', 
-    },
-    secondary: {
-      main: '#3f4245', 
-    },
-    background: {
-      default: '#f4f6f8', 
-      paper: '#ffffff', 
-    },
+    primary: { main: '#2196f3' },
+    secondary: { main: '#3f4245' },
+    background: { default: '#fafafa' },
   },
+  components: {
+    MuiPaper: {
+      styleOverrides: {
+        root: { borderRadius: 8 }
+      }
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: { 
+          borderRadius: 8,
+          boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+        }
+      }
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: { 
+          borderRadius: 6,
+          textTransform: 'none',
+        }
+      }
+    }
+  }
 });
 
-//event
-export const EventList = () => (
-  <Box sx={{ padding: 2 }}>
-    <Typography variant="h4" gutterBottom>
-      Liste des événements
-    </Typography>
+// Status avec Chip pour réutilisation
+const StatusChip = ({ value }) => {
+  if (!value) return null;
+  const colors = {
+    actif: 'success',
+    publié: 'success',
+    complet: 'primary',
+    terminé: 'primary',
+    annulé: 'error',
+    reporté: 'warning',
+  };
+  return <Chip label={value} color={colors[value.toLowerCase()] || 'default'} size="small" />;
+};
 
-    {/* Tableau des événements */}
-    <Paper sx={{ padding: 2 }}>
-      <List>
-        <Datagrid rowClick="show">
-          <TextField 
-            source="titre" 
-            label="Titre de l'événement" 
-            sx={{ fontWeight: 'bold', color: '#556c85' }} 
-          />
-          <DateField 
-            label="Date de l'événement" 
-            source="dateHeure" 
-            sx={{ fontWeight: 'bold', color: '#556c85' }} 
-          />
-          <TextField 
-            source="lieu" 
-            label="Lieu" 
-            sx={{ fontWeight: 'bold', color: '#556c85' }} 
-          />
-          <TextField 
-            source="statut" 
-            label="Statut" 
-            sx={{ fontWeight: 'bold', color: '#556c85' }} 
-          />
-        </Datagrid>
-      </List>
-    </Paper>
+// Liste d'événements simplifiée
+export const EventList = () => (
+  <Box sx={{ p: 3 }}>
+    <Typography variant="h5" sx={{ mb: 3, color: 'primary.main' }}>Événements</Typography>
+    <List>
+      <Datagrid rowClick="show">
+        <TextField source="titre" />
+        <DateField source="dateHeure" />
+        <TextField source="lieu" />
+        <TextField source="statut" render={record => <StatusChip value={record.statut} />} />
+      </Datagrid>
+    </List>
   </Box>
 );
 
-
-const OrganisateurField = () => {
-  const record = useRecordContext();
-  if (!record || !record.organisateur) return null;
-  
-  return <span>{record.organisateur.nom} ({record.organisateur.email})</span>;
-};
-
-
+// Affichage des détails d'événement simplifié
 export const EventShow = () => {
-  const eventId = 1; // ID de l'événement, à récupérer dynamiquement si nécessaire
-  
-  const { data: billets, total, isLoading, error } = useGetManyReference('billets', {
-    target: 'evenementId',  // La clé de référence qui relie les billets à l'événement
-    id: eventId, // ID de l'événement pour filtrer les billets
+  const eventId = 1; // ID d'exemple, à rendre dynamique si nécessaire
+  const { data: billets, isLoading, error } = useGetManyReference('billets', {
+    target: 'evenementId',
+    id: eventId,
   });
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+  if (isLoading) return <div>Chargement...</div>;
+  if (error) return <div>Erreur: {error.message}</div>;
+
+  const record = useRecordContext();
 
   return (
     <Show>
       <SimpleShowLayout>
+        {/* Affichage de l'image de l'événement */}
+        <ImageField source="image" label="Image de l'événement" />
+        
+        {/* Affichage des informations principales */}
         <TextField source="titre" label="Titre de l'événement" />
-        <TextField source="lieu" label="Lieu de l'événement" />
-        <DateField source="dateHeure" label="Date de l'événement" />
-        <TextField source="categorie" label="Categorie de l'événement" />
-        <OrganisateurField label="Organisateur"/>
-        {/* Titre avant le tableau */}
-        <Box sx={{ margin: '20px 0' }}>
-          <Typography variant="h6" color="#556c85" sx={{ fontWeight: 'bold' }}>
-            Billets associés
-          </Typography>
-        </Box>
+        <TextField source="lieu" label="Lieu" />
+        <DateField source="dateHeure" label="Date" />
+        <TextField source="categorie" label="Catégorie" />
 
-        {/* Tableau des billets associés */}
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell><strong>Type de billet</strong></TableCell>
-                <TableCell><strong>Prix (€)</strong></TableCell>
-                <TableCell><strong>Disponibilité</strong></TableCell>
-                <TableCell><strong>Limite d'achat</strong></TableCell>
-                <TableCell><strong>Statut</strong></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {billets?.map(billet => (
-                <TableRow key={billet.id}>
-                  <TableCell>{billet.type}</TableCell>
-                  <TableCell>{billet.prix}</TableCell>
-                  <TableCell>{billet.disponibilite}</TableCell>
-                  <TableCell>{billet.limiteAchat}</TableCell>
-                  <TableCell>{billet.venteActive ? "Actif" : "Inactif"}</TableCell>
+        {/* Affichage de l'organisateur si présent */}
+        {record?.organisateur && (
+          <Typography variant="body1" sx={{ mt: 2 }}>
+            Organisateur : {record.organisateur.nom} ({record.organisateur.email})
+          </Typography>
+        )}
+
+        {/* Section pour afficher les billets */}
+        <Box sx={{ mt: 4 }}>
+          <Typography variant="h6">Billets disponibles</Typography>
+          <TableContainer component={Paper} sx={{ mt: 2 }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Type</TableCell>
+                  <TableCell>Prix (€)</TableCell>
+                  <TableCell>Disponibilité</TableCell>
+                  <TableCell>Limite d'achat</TableCell>
+                  <TableCell>Status</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {billets?.map(billet => (
+                  <TableRow key={billet.id}>
+                    <TableCell>{billet.type}</TableCell>
+                    <TableCell>{billet.prix}</TableCell>
+                    <TableCell>{billet.disponibilite}</TableCell>
+                    <TableCell>{billet.limiteAchat}</TableCell>
+                    <TableCell>
+                    <Chip 
+                      label={billet.venteActive ? "Actif" : "Inactif"} 
+                      color={billet.venteActive ? "success" : "default"}
+                      size="small"
+                    />
+                  </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
       </SimpleShowLayout>
     </Show>
   );
 };
-
+// Création d'événement
 export const EventCreate = () => {
-  const auth = JSON.parse(localStorage.getItem("auth") || "{}");
-  const organisateurId = auth.id;  // Récupère l'ID de l'utilisateur connecté
-  console.log("Id organisateur:"+ organisateurId)
+  const auth = JSON.parse(localStorage.getItem('auth') || '{}');
   return (
-      <Create>
-          <SimpleForm defaultValues={{ organisateurId }}>
-              <TextInput source="titre" validate={required()} />
-              <TextInput multiline source="description" validate={required()} />
-              <TextInput source="categorie" validate={required()} />
-              <TextInput source="lieu" validate={required()} />
-              <TextInput source="image" validate={required()} />
-              <DateInput source="dateHeure" label="Date de l'événement" validate={required()} />
-          </SimpleForm>
-      </Create>
+    <Create>
+      <SimpleForm defaultValues={{ organisateurId: auth.id }}>
+        <TextInput source="titre" validate={required()} fullWidth />
+        <TextInput multiline source="description" validate={required()} rows={3} fullWidth />
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <TextInput source="categorie" validate={required()} sx={{ flex: 1 }} />
+          <TextInput source="lieu" validate={required()} sx={{ flex: 1 }} />
+        </Box>
+        <DateInput source="dateHeure" validate={required()} />
+        <TextInput source="image" validate={required()} fullWidth />
+      </SimpleForm>
+    </Create>
   );
 };
 
+// Edition d'événement
 export const EventEdit = () => (
   <Edit>
     <SimpleForm>
-      <TextInput source="titre" validate={required()} />
-      <TextInput multiline source="description" validate={required()} label="Short body" />
-      <TextInput source="categorie" validate={required()} />
-      <TextInput source="lieu" validate={required()} />
-      <DateInput source="dateHeure" label="Date de l'événement" validate={required()} />
-       <FileInput source="image" label="Image de l'événement" validate={required()}>
+      <TextInput source="titre" validate={required()} fullWidth />
+      <TextInput multiline source="description" validate={required()} rows={3} fullWidth />
+      <Box sx={{ display: 'flex', gap: 2 }}>
+        <TextInput source="categorie" validate={required()} sx={{ flex: 1 }} />
+        <TextInput source="lieu" validate={required()} sx={{ flex: 1 }} />
+      </Box>
+      <DateInput source="dateHeure" validate={required()} />
+      <FileInput source="image" validate={required()}>
         <FileField source="src" title="title" />
       </FileInput>
     </SimpleForm>
   </Edit>
 );
 
-//billets
-// export const ReservationList = () => (
-//   <List>
-//     <Datagrid>
-//       <TextField source='id' />
-//       <TextField source='dateReservation' />
-//     </Datagrid>
-//   </List>
-// );
-
-// export const ReservationShow = () => (
-//   <Show>
-//     <SimpleShowLayout>
-//       <TextField source='id' />
-//       <TextField source='type' />
-//       <TextField source='disponibilite' />
-//     </SimpleShowLayout>
-//   </Show>
-// );
-
-// export const ReservationCreate = () => (
-//   <Create>
-//     <SimpleForm>
-//       <TextInput source='title' validate={required()} />
-
-//     </SimpleForm>
-//   </Create>
-// );
-
-// export const ReservationEdit = () => (
-//   <Edit>
-//     <SimpleForm>
-//       <TextInput source='title' validate={required()} />
-
-//     </SimpleForm>
-//   </Edit>
-// );
-
-//USERS
+// Liste d'utilisateurs
 export const UserList = () => (
-  <Box sx={{ padding: 2 }}>
-    <Typography variant="h4" gutterBottom>
-      Liste des utilisateurs
-    </Typography>
-
-    {/* Tableau des utilisateurs */}
-    <Paper sx={{ padding: 2 }}>
-      <List>
-        <Datagrid rowClick="show">
-          <TextField 
-            source="nom" 
-            label="Nom" 
-            sx={{ fontWeight: 'bold', color: '#556c85' }} 
+  <Box sx={{ p: 3 }}>
+    <Typography variant="h5" sx={{ mb: 3, color: 'primary.main' }}>Utilisateurs</Typography>
+    <List>
+      <Datagrid rowClick="show">
+        <TextField source="nom" />
+        <TextField source="email" />
+        <TextField source="role" render={record => (
+          <Chip 
+            label={record.role} 
+            color={record.role === 'Admin' ? 'primary' : record.role === 'Organisateur' ? 'secondary' : 'default'}
+            size="small"
           />
-          <TextField 
-            source="role" 
-            label="Rôle" 
-            sx={{ fontWeight: 'bold', color: '#556c85' }} 
-          />
-        </Datagrid>
-      </List>
-    </Paper>
+        )} />
+      </Datagrid>
+    </List>
   </Box>
 );
 
-
+// Affichage des détails d'utilisateur
 export const UserShow = () => (
-  <Box sx={{ padding: 2 }}>
-    <Typography variant="h4" gutterBottom>
-      Détails de l'utilisateur
-    </Typography>
-
-    {/* Conteneur Paper pour le formulaire */}
-    <Paper sx={{ padding: 3 }}>
-      <Show>
-        <SimpleShowLayout>
-          <TextField 
-            source="nom" 
-            label="Nom" 
-            sx={{ fontWeight: 'bold', color: '#556c85', marginBottom: 2 }} 
-          />
-          <TextField 
-            source="email" 
-            label="Email" 
-            sx={{ fontWeight: 'bold', color: '#556c85', marginBottom: 2 }} 
-          />
-          <TextField 
-            source="role" 
-            label="Rôle" 
-            sx={{ fontWeight: 'bold', color: '#556c85', marginBottom: 2 }} 
-          />
-          <DateField 
-            label="Date de création" 
-            source="dateCreation" 
-            sx={{ fontWeight: 'bold', color: '#556c85', marginBottom: 2 }} 
-          />
-        </SimpleShowLayout>
-      </Show>
-    </Paper>
-  </Box>
+  <Show>
+    <SimpleShowLayout>
+      <TextField source="nom" sx={{ fontSize: '1.25rem', fontWeight: 500 }} />
+      <TextField source="email" />
+      <TextField source="role" render={record => (
+        <Chip 
+          label={record.role} 
+          color={record.role === 'Admin' ? 'primary' : record.role === 'Organisateur' ? 'secondary' : 'default'}
+        />
+      )} />
+      <DateField source="dateCreation" />
+    </SimpleShowLayout>
+  </Show>
 );
+
+// Création d'utilisateur
 export const UserCreate = () => (
   <Create>
     <SimpleForm>
-      <TextInput source='nom' validate={required()} />
-      <TextInput source='email' validate={required()} />
-      <TextInput source='role' validate={required()} />
+      <TextInput source="nom" validate={required()} fullWidth />
+      <TextInput source="email" validate={required()} fullWidth />
+      <TextInput source="role" validate={required()} />
     </SimpleForm>
   </Create>
 );
 
+// Edition d'utilisateur
 export const UserEdit = () => (
   <Edit title="Mise à jour du rôle">
     <SimpleForm>
-      <TextInput source='role' validate={required()} />
+      <TextInput source="role" validate={required()} />
     </SimpleForm>
   </Edit>
 );
 
-
-
-const App = () => {
-  return (
-    <Admin  dataProvider={dataProvider}
-        theme={myTheme}
-        authProvider={authProvider}
-        dashboard={Dashboard}
-        loginPage={LoginPage}
-    >
-      <Resource name='evenements' list={EventList} show={EventShow} create={EventCreate} edit={EventEdit} icon={EventIcon} />
-      <Resource name='utilisateurs' list={UserList} show={UserShow} create={UserCreate} edit={UserEdit} icon={UserIcon}/>
-      <Resource name="reservations" list={ReservationListByEvenement} />
-  <CustomRoutes>
-    <Route path="/reservations/:id" element={<ReservationByEvent />} />
-  </CustomRoutes>
-     
-    </Admin>
-  
-)};
+const App = () => (
+  <Admin
+    dataProvider={dataProvider}
+    theme={theme}
+    authProvider={authProvider}
+    dashboard={Dashboard}
+    loginPage={LoginPage}
+    disableTelemetry
+  >
+    <Resource
+      name="evenements"
+      list={EventList}
+      show={EventShow}
+      create={EventCreate}
+      edit={EventEdit}
+      icon={EventIcon}
+      options={{ label: 'Événements' }}
+    />
+    <Resource
+      name="utilisateurs"
+      list={UserList}
+      show={UserShow}
+      create={UserCreate}
+      edit={UserEdit}
+      icon={UserIcon}
+    />
+    <Resource 
+      name="reservations" 
+      list={ReservationListByEvenement}
+      icon={TicketIcon}
+    />
+    <CustomRoutes>
+      <Route path="/reservations/:id" element={<ReservationByEvent />} />
+    </CustomRoutes>
+  </Admin>
+);
 
 export default App;
