@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { cancelReservation, createNewReservation, getReservationsByUserId } from "../services/reservationService";
+import { cancelReservation, createNewReservation, getReservationsByEventId, getReservationsByUserId } from "../services/reservationService";
 import { AuthRequest } from "../middlewares/authMiddleware";
 
 
@@ -31,6 +31,24 @@ export async function getUserReservations(req: Request, res: Response): Promise<
     } catch (error) {
         res.status(500).json({ error: "Erreur interne du serveur" });
     }
+
+}
+
+export async function getReservations(req: Request, res: Response): Promise<void> {
+  
+  try {
+  const eventId = parseInt(req.params.eventId);
+  if (isNaN(eventId)) {
+      res.status(400).json({ error: "ID evenement invalide" });
+  }
+  const reservations = await getReservationsByEventId(eventId);
+  if (!reservations) {
+    res.status(401).json({ error: "L'evenement n'a pas encore de reservations !" });
+  }
+  res.json(reservations);
+  } catch (error) {
+      res.status(500).json({ error: "Erreur interne du serveur" });
+  }
 
 }
 

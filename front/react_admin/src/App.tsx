@@ -29,7 +29,8 @@ import
   SelectInput,
   useGetList,
   FileInput,
-  FileField
+  FileField,
+  CustomRoutes
 } from 'react-admin';
 import { dataProvider } from './data-provider';
 import authProvider from './authProvider';
@@ -42,6 +43,10 @@ import EventIcon from "@mui/icons-material/Event";
 import ConfirmationNumberIcon from "@mui/icons-material/Label";
 import { useGetManyReference } from 'react-admin'; // Utilisation de la méthode getManyReference
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import ReservationEventSelector from './components/ReservationPage/ReservationEventSelector';
+import ReservationByEvent from './components/ReservationPage/ReservationByEvent';
+import { Route } from 'react-router-dom';
+import { ReservationListByEvenement } from './components/ReservationPage/ReservationListByEvenement';
 //import MyLoginPage from './components/LoginPage/LoginPage';
 
 //theme
@@ -195,44 +200,42 @@ export const EventEdit = () => (
 );
 
 //billets
-export const TicketList = () => (
-  <List>
-    <Datagrid>
-      <TextField source='id' />
-      <TextField source='prix' />
-      <TextField source='type' />
-      <TextField source='evenementId' />
-    </Datagrid>
-  </List>
-);
+// export const ReservationList = () => (
+//   <List>
+//     <Datagrid>
+//       <TextField source='id' />
+//       <TextField source='dateReservation' />
+//     </Datagrid>
+//   </List>
+// );
 
-export const TicketShow = () => (
-  <Show>
-    <SimpleShowLayout>
-      <TextField source='id' />
-      <TextField source='type' />
-      <TextField source='disponibilite' />
-    </SimpleShowLayout>
-  </Show>
-);
+// export const ReservationShow = () => (
+//   <Show>
+//     <SimpleShowLayout>
+//       <TextField source='id' />
+//       <TextField source='type' />
+//       <TextField source='disponibilite' />
+//     </SimpleShowLayout>
+//   </Show>
+// );
 
-export const TicketCreate = () => (
-  <Create>
-    <SimpleForm>
-      <TextInput source='title' validate={required()} />
+// export const ReservationCreate = () => (
+//   <Create>
+//     <SimpleForm>
+//       <TextInput source='title' validate={required()} />
 
-    </SimpleForm>
-  </Create>
-);
+//     </SimpleForm>
+//   </Create>
+// );
 
-export const TicketEdit = () => (
-  <Edit>
-    <SimpleForm>
-      <TextInput source='title' validate={required()} />
+// export const ReservationEdit = () => (
+//   <Edit>
+//     <SimpleForm>
+//       <TextInput source='title' validate={required()} />
 
-    </SimpleForm>
-  </Edit>
-);
+//     </SimpleForm>
+//   </Edit>
+// );
 
 //USERS
 export const UserList = () => (
@@ -308,10 +311,8 @@ export const UserCreate = () => (
 );
 
 export const UserEdit = () => (
-  <Edit>
+  <Edit title="Mise à jour du rôle">
     <SimpleForm>
-      <TextInput source='nom' validate={required()} />
-      <TextInput source='email' validate={required()} />
       <TextInput source='role' validate={required()} />
     </SimpleForm>
   </Edit>
@@ -329,9 +330,13 @@ const App = () => {
     >
       <Resource name='evenements' list={EventList} show={EventShow} create={EventCreate} edit={EventEdit} icon={EventIcon} />
       <Resource name='utilisateurs' list={UserList} show={UserShow} create={UserCreate} edit={UserEdit} icon={UserIcon}/>
+      <Resource name="reservations" list={ReservationListByEvenement} />
+  <CustomRoutes>
+    <Route path="/reservations/:id" element={<ReservationByEvent />} />
+  </CustomRoutes>
      
     </Admin>
-  );
-};
+  
+)};
 
 export default App;

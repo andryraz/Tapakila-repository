@@ -12,6 +12,19 @@ export async function getReservationsByUserId(userId: number) {
   });
 }
 
+export async function getReservationsByEventId(eventId: number) {
+  return prisma.reservation.findMany({
+    where: { evenementId: eventId },
+    include: {
+      evenement: true,
+      utilisateur: true,
+      billetsReserves: {
+        include: { billet: true },
+      },
+    },
+  });
+}
+
 
 export async function createReservation(
   utilisateurId: number,

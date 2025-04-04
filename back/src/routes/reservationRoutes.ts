@@ -1,12 +1,13 @@
 import express from "express";
-import { cancelReservationController, createReservation, getUserReservations } from "../controllers/reservationController";
+import { cancelReservationController, createReservation, getReservations, getUserReservations } from "../controllers/reservationController";
 import { authenticateToken, authorizeRole } from "../middlewares/authMiddleware";
 // import { authenticateUser } from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
 
-router.get("/:userId", getUserReservations);
+router.get("/utilisateur/:userId", getUserReservations);
+router.get("/:eventId", getReservations);
 router.post("/", authenticateToken, authorizeRole("USER"), createReservation);
 router.delete("/:reservationId", authenticateToken, cancelReservationController);
 

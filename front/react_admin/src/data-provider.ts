@@ -29,46 +29,50 @@ const httpClient = async (url: string, options: any = {}) => {
 };
 
 export const dataProvider: DataProvider = {
-  getList: async function <RecordType extends RaRecord = any>(
-      resource: string,
-      params: GetListParams & QueryFunctionContext
-  ): Promise<GetListResult<RecordType>> {
-      let apiUrl;
-
-      switch (resource) {
-          case 'evenements':
-              apiUrl = 'http://localhost:5000/evenements/admin';
-              break;
-          case 'billets':
-              apiUrl = 'http://localhost:5000/billets/1';
-              break;
-          case 'utilisateurs':
-              apiUrl = 'http://localhost:5000/utilisateurs';
-              break;
-          default:
-              throw new Error(`Resource ${resource} is not supported`);
-      }
-
-      const data = await fetch(apiUrl, { method: 'GET' });
-     const { pagination } = params;
-      const { page = 1, perPage = 10 } = pagination || {};
-      const offset = (page - 1) * perPage;
-      const items = await data.json();
-      const pageNumber = items.length / perPage;
-
-      const result: GetListResult = {
-          data: items.slice(offset, offset + perPage),
-          total: items.length,
-          pageInfo: {
-              hasNextPage: page < pageNumber,
-              hasPreviousPage: page !== 1,
-          },
-      };
-
-      return result;
-  },
-
-
+    getList: async function <RecordType extends RaRecord = any>(
+        resource: string,
+        params: GetListParams & QueryFunctionContext
+    ): Promise<GetListResult<RecordType>> {
+        let apiUrl;
+    
+        switch (resource) {
+            case 'evenements':
+                apiUrl = 'http://localhost:5000/evenements/admin';
+                break;
+            case 'reservations': {
+                const eventId = params.filter?.eventId;
+                if (!eventId) {
+                    throw new Error('eventId is required to fetch reservations');
+                }
+                apiUrl = `http://localhost:5000/reservations/${eventId}`;
+                break;
+            }
+            case 'utilisateurs':
+                apiUrl = 'http://localhost:5000/utilisateurs';
+                break;
+            default:
+                throw new Error(`Resource ${resource} is not supported`);
+        }
+    
+        const response = await fetch(apiUrl);
+        const items = await response.json();
+    
+        const { page = 1, perPage = 10 } = params.pagination || {};
+        const offset = (page - 1) * perPage;
+        const paginated = items.slice(offset, offset + perPage);
+    
+        const result: GetListResult = {
+            data: paginated,
+            total: items.length,
+            pageInfo: {
+                hasNextPage: page * perPage < items.length,
+                hasPreviousPage: page > 1,
+            },
+        };
+    
+        return result;
+    },
+    
     // Autres méthodes (getList, getOne, create, delete, etc.)
   
     getManyReference: async function <RecordType extends RaRecord = any>(
@@ -164,11 +168,8 @@ export const dataProvider: DataProvider = {
           case 'evenements':
             apiUrl = `http://localhost:5000/evenements/${params.id}`;
             break;
-          case 'billets':
-            apiUrl = `http://localhost:5000/billets/${params.id}`;
-            break;
           case 'utilisateurs':
-            apiUrl = `http://localhost:5000/utilisateurs/${params.id}`;
+            apiUrl = `http://localhost:5000/utilisateurs/role/${params.id}`;
             break;
           default:
             throw new Error(`Resource ${resource} is not supported`);
@@ -205,9 +206,6 @@ export const dataProvider: DataProvider = {
         case 'evenements':
             apiUrl = `http://localhost:5000/evenements/${params.id}`;
             break;
-        case 'billets':
-            apiUrl = `http://localhost:5000/billets/${params.id}`;
-            break;
         case 'utilisateurs':
             apiUrl = `http://localhost:5000/utilisateurs/${params.id}`;
             break;
@@ -242,20 +240,30 @@ export const dataProvider: DataProvider = {
         case 'evenements':
             apiUrl = `http://localhost:5000/evenements`;
             break;
-        case 'billets':
-            apiUrl = `http://localhost:5000/billets`;
-            break;
         case 'utilisateurs':
             apiUrl = `http://localhost:5000/utilisateurs`;
+            break;
+        case 'reservations':
+            apiUrl = `http://localhost:5000/reservations`;
             break;
         default:
             throw new Error(`Resource ${resource} is not supported`);
     }
       const { ids } = params;
 
+      const auth = localStorage.getItem("auth");
+      const token = auth ? JSON.parse(auth).token : null;
+
       try {
           const promises = ids.map(id =>
-              fetch(`${apiUrl}/${id}`, { method: 'DELETE' })
+              fetch(`${apiUrl}/${id}`, { method: 'DELETE' ,
+
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                  },
+                  body: JSON.stringify(params.data),
+              })
           );
 
           const responses = await Promise.all(promises);
