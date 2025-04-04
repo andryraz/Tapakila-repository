@@ -136,7 +136,7 @@ export async function updateEvent(
   evenementId: number,
   userId: number,
   userRole: string,
-  updateData: Partial<{ titre: string; description: string; categorie: string; image: string; dateHeure: Date; lieu: string }>
+  updateData: Partial<{ titre?: string; description?: string; categorie?: string; image?: string; dateHeure?: Date; lieu?: string }>
 ) {
   // Vérifier si l'événement existe
   const evenement = await prisma.evenement.findUnique({

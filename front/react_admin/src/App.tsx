@@ -125,10 +125,11 @@ export const EventShow = () => {
         <TextField source="lieu" label="Lieu de l'événement" />
         <DateField source="dateHeure" label="Date de l'événement" />
         <TextField source="categorie" label="Categorie de l'événement" />
+        <OrganisateurField label="Organisateur"/>
         {/* Titre avant le tableau */}
         <Box sx={{ margin: '20px 0' }}>
-          <Typography variant="h6" color="primary" sx={{ fontWeight: 'bold' }}>
-            Billets associés à cet événement
+          <Typography variant="h6" color="#556c85" sx={{ fontWeight: 'bold' }}>
+            Billets associés
           </Typography>
         </Box>
 
@@ -160,16 +161,23 @@ export const EventShow = () => {
   );
 };
 
-export const EventCreate = () => (
-  <Create>
-    <SimpleForm>
-      <TextInput source='title' />
-      <TextInput source='body' multiline={true} label='Short body' />
-      <BooleanInput source='bool' label='Short body' />
-      <NumberInput source='bool' label='Short body' />
-    </SimpleForm>
-  </Create>
-);
+export const EventCreate = () => {
+  const auth = JSON.parse(localStorage.getItem("auth") || "{}");
+  const organisateurId = auth.id;  // Récupère l'ID de l'utilisateur connecté
+  console.log("Id organisateur:"+ organisateurId)
+  return (
+      <Create>
+          <SimpleForm defaultValues={{ organisateurId }}>
+              <TextInput source="titre" validate={required()} />
+              <TextInput multiline source="description" validate={required()} />
+              <TextInput source="categorie" validate={required()} />
+              <TextInput source="lieu" validate={required()} />
+              <TextInput source="image" validate={required()} />
+              <DateInput source="dateHeure" label="Date de l'événement" validate={required()} />
+          </SimpleForm>
+      </Create>
+  );
+};
 
 export const EventEdit = () => (
   <Edit>
@@ -179,17 +187,6 @@ export const EventEdit = () => (
       <TextInput source="categorie" validate={required()} />
       <TextInput source="lieu" validate={required()} />
       <DateInput source="dateHeure" label="Date de l'événement" validate={required()} />
-      {/* SelectInput pour le statut */}
-      <SelectInput 
-        source="statut" 
-        label="Statut" 
-        validate={required()} 
-        choices={[
-          { id: 'BROUILLON', name: 'Brouillon' },
-          { id: 'PUBLIE', name: 'Publié' },
-          { id: 'ANNULE', name: 'Annulé' },
-        ]}
-      />
        <FileInput source="image" label="Image de l'événement" validate={required()}>
         <FileField source="src" title="title" />
       </FileInput>

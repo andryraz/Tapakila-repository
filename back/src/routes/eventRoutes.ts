@@ -12,7 +12,8 @@ router.get("/:id", getEvent);
 router.get("/categorie/:categorie", getFilteredEvents);
 router.get("/lieu/:lieu", getFilteredEvents);
 router.post("/", authenticateToken, authorizeRoles("ADMIN", "ORGANISATEUR"), createEvenementController);
-router.put("/:evenementId", updateEvenementAdmin);
+// router.post("/", createEvenementController);
+router.put("/:evenementId", authenticateToken, authorizeRoles("ADMIN", "ORGANISATEUR"), updateEvenementController);
 router.delete("/:evenementId", deleteEvenementAdmin);
 // router.get("/:categorie/:lieu", getEvents);
 // http://localhost:3000/evenements/?titre=titre

@@ -13,6 +13,21 @@ import {
 } from 'react-admin';
 const apiUrl = 'http://localhost:5000';
 
+const httpClient = async (url: string, options: any = {}) => {
+    const auth = localStorage.getItem("auth");
+    const token = auth ? JSON.parse(auth).token : null;
+
+    if (!options.headers) {
+        options.headers = new Headers({ "Content-Type": "application/json" });
+    }
+
+    if (token) {
+        options.headers.set("Authorization", `Bearer ${token}`);
+    }
+
+    return fetchUtils.fetchJson(url, options);
+};
+
 export const dataProvider: DataProvider = {
   getList: async function <RecordType extends RaRecord = any>(
       resource: string,
@@ -105,76 +120,80 @@ export const dataProvider: DataProvider = {
   },
 
 
-  create: async function <RecordType extends Omit<RaRecord, 'id'> = any, ResultRecordType extends RaRecord = RecordType & { id: Identifier }>(
-      resource: string,
-      params: CreateParams
-  ): Promise<CreateResult<ResultRecordType>> {
-      let apiUrl;
+  
+  
+      create: async (resource: string, params: any) => {
+          let apiUrl;
+  
+          switch (resource) {
+              case 'evenements':
+                  apiUrl = `http://localhost:5000/evenements`;
+                  break;
+              case 'billets':
+                  apiUrl = `http://localhost:5000/billets`;
+                  break;
+              case 'utilisateurs':
+                  apiUrl = `http://localhost:5000/utilisateurs`;
+                  break;
+              default:
+                  throw new Error(`Ressource ${resource} non supportée`);
+          }
+  
+          const { data } = params;
+  
+          const response = await httpClient(apiUrl, {
+              method: 'POST',
+              body: JSON.stringify(data),
+          });
+  
+          if (!response.json.id) {
+              throw new Error("L'API ne renvoie pas d'ID valide pour l'événement");
+          }
+  
+          return { data: response.json };
+      },
 
-      switch (resource) {
-        case 'evenements':
-            apiUrl = `http://localhost:5000/evenements`;
-            break;
-        case 'billets':
-            apiUrl = `http://localhost:5000/billets`;
-            break;
-        case 'utilisateurs':
-            apiUrl = `http://localhost:5000/utilisateurs`;
-            break;
-        default:
-            throw new Error(`Resource ${resource} is not supported`);
-    }
-      const { data } = params;
-      const createdItem = await fetch(apiUrl, { method: 'POST', body: JSON.stringify(data) });
 
-      const result: CreateResult = {
-          data: await createdItem.json(),
-      };
-
-      return result;
-  },
-
-  update: async function <RecordType extends RaRecord = any>(
-    resource: string,
-    params: UpdateParams
-): Promise<UpdateResult<RecordType>> {
-    let apiUrl;
-
-    switch (resource) {
-        case 'evenements':
+      update: async function <RecordType extends RaRecord = any>(
+        resource: string,
+        params: UpdateParams
+      ): Promise<UpdateResult<RecordType>> {
+        let apiUrl;
+      
+        switch (resource) {
+          case 'evenements':
             apiUrl = `http://localhost:5000/evenements/${params.id}`;
             break;
-        case 'billets':
+          case 'billets':
             apiUrl = `http://localhost:5000/billets/${params.id}`;
             break;
-        case 'utilisateurs':
+          case 'utilisateurs':
             apiUrl = `http://localhost:5000/utilisateurs/${params.id}`;
             break;
-        default:
+          default:
             throw new Error(`Resource ${resource} is not supported`);
-    }
-    const { id, data } = params;
-    const response = await fetch(apiUrl, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `Erreur lors de la mise à jour de l'élément ${id}`);
-    }
-
-    const updatedRecord = await response.json();
-
-    const result: UpdateResult<RecordType> = {
-        data: updatedRecord as RecordType,
-    };
-
-    return result;
-},
+        }
+      
+        const auth = localStorage.getItem("auth");
+        const token = auth ? JSON.parse(auth).token : null;
+      
+        const response = await fetch(apiUrl, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(params.data),
+        });
+      
+        if (!response.ok) {
+          throw new Error("Erreur lors de la mise à jour");
+        }
+      
+        return {
+          data: await response.json(),
+        };
+      },
 
   delete: async function <RecordType extends RaRecord = any>(
       resource: string,
@@ -211,55 +230,52 @@ export const dataProvider: DataProvider = {
       return result;
   },
 
+
+
+  deleteMany: async function <RecordType extends RaRecord = any>(
+      resource: string,
+      params: DeleteManyParams
+  ): Promise<DeleteManyResult<RecordType>> {
+      let apiUrl;
+
+      switch (resource) {
+        case 'evenements':
+            apiUrl = `http://localhost:5000/evenements`;
+            break;
+        case 'billets':
+            apiUrl = `http://localhost:5000/billets`;
+            break;
+        case 'utilisateurs':
+            apiUrl = `http://localhost:5000/utilisateurs`;
+            break;
+        default:
+            throw new Error(`Resource ${resource} is not supported`);
+    }
+      const { ids } = params;
+
+      try {
+          const promises = ids.map(id =>
+              fetch(`${apiUrl}/${id}`, { method: 'DELETE' })
+          );
+
+          const responses = await Promise.all(promises);
+          const allOk = responses.every(response => response.ok);
+
+          if (!allOk) {
+              throw new Error("Erreur lors de la suppression de plusieurs éléments.");
+          }
+
+          const result: DeleteManyResult<RecordType> = {
+              data: ids as unknown as RecordType[],
+          };
+
+          return result;
+      } catch (error) {
+          console.error("Erreur lors de la suppression de plusieurs éléments :", error);
+          throw error;
+      }
+  },
 };
-
-
-
-
-
-//   deleteMany: async function <RecordType extends RaRecord = any>(
-//       resource: string,
-//       params: DeleteManyParams
-//   ): Promise<DeleteManyResult<RecordType>> {
-//       let apiUrlBase;
-
-//       switch (resource) {
-//           case 'posts':
-//               apiUrlBase = 'https://jsonplaceholder.typicode.com/posts';
-//               break;
-//           case 'todos':
-//               apiUrlBase = 'https://jsonplaceholder.typicode.com/todos';
-//               break;
-//           case 'albums':
-//               apiUrlBase = 'https://jsonplaceholder.typicode.com/albums';
-//               break;
-//           default:
-//               throw new Error(`Resource ${resource} is not supported`);
-//       }
-//       const { ids } = params;
-
-//       try {
-//           const promises = ids.map(id =>
-//               fetch(`${apiUrlBase}/${id}`, { method: 'DELETE' })
-//           );
-
-//           const responses = await Promise.all(promises);
-//           const allOk = responses.every(response => response.ok);
-
-//           if (!allOk) {
-//               throw new Error("Erreur lors de la suppression de plusieurs éléments.");
-//           }
-
-//           const result: DeleteManyResult<RecordType> = {
-//               data: ids as unknown as RecordType[],
-//           };
-
-//           return result;
-//       } catch (error) {
-//           console.error("Erreur lors de la suppression de plusieurs éléments :", error);
-//           throw error;
-//       }
-//   },
 
 
 

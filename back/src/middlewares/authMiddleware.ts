@@ -19,7 +19,7 @@ export function authenticateToken(req: AuthRequest, res: Response, next: NextFun
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as { userId: number; role: string };
     req.user = decoded;
-    next(); // ✅ Passe bien au middleware suivant
+    next(); 
   } catch (err) {
     res.status(403).json({ error: "Token invalide" });
   }
@@ -35,7 +35,7 @@ export function authorizeRole(requiredRole: string) {
       res.status(403).json({ error: "Accès refusé, rôle insuffisant" });
       return;
     }
-    next(); // ✅ Passe bien au middleware suivant sans retourner de Response
+    next(); 
   };
 }
 
@@ -43,13 +43,13 @@ export function authorizeRoles(...allowedRoles: string[]) {
   return (req: AuthRequest, res: Response, next: NextFunction) => {
     if (!req.user) {
       res.status(401).json({ error: "Non authentifié" });
-      return next(); // ✅ Ajout de `next()`
+      return next(); 
     }
     if (!allowedRoles.includes(req.user.role)) {
       res.status(403).json({ error: "Accès refusé, rôle insuffisant" });
-      return next(); // ✅ Ajout de `next()`
+      return next(); 
     }
-    next(); // ✅ Passe bien au middleware suivant
+    next(); 
   };
 }
 
