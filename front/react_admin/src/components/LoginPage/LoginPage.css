@@ -1,0 +1,30 @@
+/* LoginPage.css */
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .login-card {
+    width: 350px;
+    padding: 20px;
+    background-color: aqua;
+  }
+  
+  .login-title {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  /* Vous pouvez ajouter des marges verticales aux champs de texte */
+  .login-form .MuiTextField-root {
+    margin-top: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .login-button {
+    margin-top: 20px;
+  }
+  

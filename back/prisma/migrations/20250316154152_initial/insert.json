@@ -1,0 +1,93 @@
+[
+    {
+      "nom": "Alice Dupont",
+      "email": "alice.dupont@example.com",
+      "motDePasse": "password123",
+      "role": "USER"
+    },
+    {
+      "nom": "Bob Martin",
+      "email": "bob.martin@example.com",
+      "motDePasse": "password123",
+      "role": "USER"
+    },
+    {
+      "nom": "Caroline Durand",
+      "email": "caroline.durand@example.com",
+      "motDePasse": "password123",
+      "role": "USER"
+    },
+    {
+      "nom": "David Lefevre",
+      "email": "david.lefevre@example.com",
+      "motDePasse": "password123",
+      "role": "USER"
+    },
+    {
+      "nom": "Emma Bernard",
+      "email": "emma.bernard@example.com",
+      "motDePasse": "password123",
+      "role": "USER"
+    },
+    {
+      "nom": "Franck Moreau",
+      "email": "franck.moreau@example.com",
+      "motDePasse": "password123",
+      "role": "USER"
+    },
+    {
+      "nom": "Gabrielle Simon",
+      "email": "gabrielle.simon@example.com",
+      "motDePasse": "password123",
+      "role": "USER"
+    },
+    {
+      "nom": "Hugo Laurent",
+      "email": "hugo.laurent@example.com",
+      "motDePasse": "password123",
+      "role": "USER"
+    },
+    {
+      "nom": "Isabelle Petit",
+      "email": "isabelle.petit@example.com",
+      "motDePasse": "password123",
+      "role": "USER"
+    },
+    {
+      "nom": "Julien Renault",
+      "email": "julien.renault@example.com",
+      "motDePasse": "password123",
+      "role": "USER"
+    },
+    {
+      "nom": "Karine Garcia",
+      "email": "karine.garcia@example.com",
+      "motDePasse": "password123",
+      "role": "USER"
+    },
+    {
+      "nom": "Laurent Michel",
+      "email": "laurent.michel@example.com",
+      "motDePasse": "password123",
+      "role": "USER"
+    },
+    {
+      "nom": "Mélanie Robin",
+      "email": "melanie.robin@example.com",
+      "motDePasse": "password123",
+      "role": "USER"
+    },
+    {
+      "nom": "Nicolas Girard",
+      "email": "nicolas.girard@example.com",
+      "motDePasse": "password123",
+      "role": "USER"
+    },
+    {
+      "nom": "Océane Fournier",
+      "email": "oceane.fournier@example.com",
+      "motDePasse": "password123",
+      "role": "USER"
+    }
+  ]
+  

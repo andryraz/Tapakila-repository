@@ -56,9 +56,9 @@ export const Dashboard = () => {
           </>
         ) : (
           <>
-            <StatCard title="Total Événements" value={totalEvents || displayedEvents.length} />
-            <StatCard title="Total Billets" value={100} />
-            <StatCard title="Total Utilisateurs" value={18} />
+            <StatCard title="Total Événements" value={totalEvents} />
+            <StatCard title="Total Billets" value={totalBillets} />
+            <StatCard title="Total Utilisateurs" value={totalUtilisateurs} />
             <StatCard title="Total Réservations" value={21} />
           </>
         )}
